@@ -2,22 +2,32 @@
 name=Alberi Monumentali Italia
 qgisMinimumVersion=3.20
 qgisMaximumVersion=4.99
-description=Scarica e visualizza gli alberi monumentali d'Italia dal MASAF
+description=Scarica e visualizza gli alberi monumentali d'Italia dal registro ufficiale MASAF
 version=1.1
-supportsQt6=True
-author=Plugin QGIS
-email=info@example.com
+author=Salvatore Fiandaca
+email=pigrecoinfinito@gmail.com
 about=Plugin per scaricare gli elenchi regionali degli alberi monumentali d'Italia
     dal sito del Ministero dell'agricoltura, della sovranità alimentare e delle foreste (MASAF).
     Permette di selezionare una o più regioni oppure tutta l'Italia, converte le coordinate
     DMS in gradi decimali WGS84 e salva i dati in formato Shapefile o GeoPackage
-    con tematizzazione dedicata (dimensione proporzionale alla circonferenza del fusto).
+    con tematizzazione graduata (dimensione proporzionale alla circonferenza del fusto)
+    ed etichette con il nome volgare della specie.
     Dati aggiornati al nono aggiornamento dell'elenco nazionale (23/10/2025).
+    Licenza dati: Creative Commons CC BY 4.0.
+    Plugin sviluppato con il supporto di Claude AI (Anthropic).
+
+    ENGLISH:
+    Plugin to download Italy's monumental trees registry from the official MASAF website
+    (Ministry of Agriculture). Supports single-region or full-Italy download, converts
+    DMS coordinates to WGS84 decimal degrees, and saves data as Shapefile or GeoPackage
+    with graduated symbology (size proportional to trunk circumference).
+    Data license: Creative Commons CC BY 4.0.
+    Plugin developed with Claude AI (Anthropic) support.
 tracker=https://github.com/pigreco/ami_masaf/issues
 repository=https://github.com/pigreco/ami_masaf
 homepage=https://github.com/pigreco/ami_masaf
 hasProcessingProvider=no
-tags=alberi,monumentali,foreste,italia,masaf,natura,patrimonio
+tags=alberi,monumentali,foreste,italia,masaf,natura,patrimonio,trees,italy
 category=Web
 icon=icon.png
 experimental=True
@@ -25,5 +35,8 @@ deprecated=False
 server=False
 changelog=
     1.1 Porting QGIS 4 / PyQt6: enum qualificati (QgsVectorFileWriter, QgsGraduatedSymbolRenderer),
-        fix thread-safety in refresh URL, fix nome campo CIRCONFERENZA_FUSTO_CM in GeoPackage
-    1.0 Versione iniziale - download regionale e nazionale, SHP/GPKG, tematizzazione
+        rimosso QVariant, fix URI memory layer, fix thread-safety refresh URL,
+        fix nome campo CIRCONFERENZA_FUSTO_CM in GeoPackage,
+        aggiornati pattern colonne XLS IX aggiornamento MASAF (LATITUDINE SU GIS)
+    1.0 Versione iniziale — download regionale e nazionale, conversione DMS→DD,
+        output SHP/GPKG, tematizzazione graduata per circonferenza fusto
