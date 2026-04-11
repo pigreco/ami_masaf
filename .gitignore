@@ -1,0 +1,14 @@
+# File di esempio / dati locali
+sample/
+
+# ZIP di distribuzione
+*.zip
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+
+# File di sistema
+.DS_Store
+Thumbs.db

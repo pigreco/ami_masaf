@@ -1,0 +1,29 @@
+[general]
+name=Alberi Monumentali Italia
+qgisMinimumVersion=3.20
+qgisMaximumVersion=4.99
+description=Scarica e visualizza gli alberi monumentali d'Italia dal MASAF
+version=1.1
+supportsQt6=True
+author=Plugin QGIS
+email=info@example.com
+about=Plugin per scaricare gli elenchi regionali degli alberi monumentali d'Italia
+    dal sito del Ministero dell'agricoltura, della sovranità alimentare e delle foreste (MASAF).
+    Permette di selezionare una o più regioni oppure tutta l'Italia, converte le coordinate
+    DMS in gradi decimali WGS84 e salva i dati in formato Shapefile o GeoPackage
+    con tematizzazione dedicata (dimensione proporzionale alla circonferenza del fusto).
+    Dati aggiornati al nono aggiornamento dell'elenco nazionale (23/10/2025).
+tracker=https://github.com/user/alberi_monumentali/issues
+repository=https://github.com/user/alberi_monumentali
+homepage=https://github.com/user/alberi_monumentali
+hasProcessingProvider=no
+tags=alberi,monumentali,foreste,italia,masaf,natura,patrimonio
+category=Web
+icon=icon.png
+experimental=True
+deprecated=False
+server=False
+changelog=
+    1.1 Porting QGIS 4 / PyQt6: enum qualificati (QgsVectorFileWriter, QgsGraduatedSymbolRenderer),
+        fix thread-safety in refresh URL, fix nome campo CIRCONFERENZA_FUSTO_CM in GeoPackage
+    1.0 Versione iniziale - download regionale e nazionale, SHP/GPKG, tematizzazione
