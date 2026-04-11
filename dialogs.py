@@ -166,28 +166,30 @@ class AlberiDialog(QDialog):
 
         # ----- Pulsanti -----
         btn_row2 = QHBoxLayout()
+        btn_row2.setSpacing(6)
+
         self.btn_download = QPushButton("⬇  Scarica e converti")
         self.btn_download.setFixedHeight(36)
+        self.btn_download.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.btn_download.setStyleSheet(
             "QPushButton { background: #2D6A4F; color: white; border-radius: 4px; "
-            "font-weight: bold; font-size: 12px; }"
+            "font-weight: bold; font-size: 12px; padding: 0 16px; }"
             "QPushButton:hover { background: #1B5E20; }"
             "QPushButton:disabled { background: #aaa; }"
         )
         self.btn_download.clicked.connect(self._start_download)
 
         self.btn_cancel = QPushButton("Annulla")
-        self.btn_cancel.setFixedHeight(36)
+        self.btn_cancel.setFixedSize(90, 36)
         self.btn_cancel.clicked.connect(self._cancel)
         self.btn_cancel.setEnabled(False)
 
         btn_close = QPushButton("Chiudi")
-        btn_close.setFixedHeight(36)
+        btn_close.setFixedSize(90, 36)
         btn_close.clicked.connect(self.close)
 
         btn_row2.addWidget(self.btn_download)
         btn_row2.addWidget(self.btn_cancel)
-        btn_row2.addStretch()
         btn_row2.addWidget(btn_close)
         root.addLayout(btn_row2)
 
