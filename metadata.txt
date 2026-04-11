@@ -40,3 +40,7 @@ changelog=
         aggiornati pattern colonne XLS IX aggiornamento MASAF (LATITUDINE SU GIS)
     1.0 Versione iniziale — download regionale e nazionale, conversione DMS→DD,
         output SHP/GPKG, tematizzazione graduata per circonferenza fusto
+    0.0 Dati: Elenco alberi monumentali d'Italia — MASAF
+        Fonte: https://www.masaf.gov.it/flex/cm/pages/ServeBLOB.php/L/IT/IDPagina/11260
+        Licenza: Creative Commons CC BY 4.0
+        https://www.masaf.gov.it/flex/cm/pages/ServeBLOB.php/L/IT/IDPagina/11260
