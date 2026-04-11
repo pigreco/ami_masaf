@@ -100,6 +100,10 @@ class AlberiDialog(QDialog):
         self.list_regions = QListWidget()
         self.list_regions.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
         self.list_regions.setFixedHeight(200)
+        self.list_regions.setStyleSheet(
+            "QListWidget::item:selected { background-color: #2D6A4F; color: white; }"
+            "QListWidget::item:selected:!active { background-color: #2D6A4F; color: white; }"
+        )
         for r in REGIONI:
             item = QListWidgetItem(r)
             self.list_regions.addItem(item)
