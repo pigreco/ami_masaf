@@ -354,6 +354,10 @@ def dataframes_to_layer(df_list, output_path, fmt, layer_name="Alberi Monumental
         out_file = output_path
         options.driverName = "GPKG"
         options.layerName = layer_name
+        # Se il GPKG esiste già, aggiunge/sovrascrive solo il layer
+        # invece di ricreare l'intero file
+        if os.path.isfile(out_file):
+            options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
 
     # 3. Salva su disco
     transform_ctx = QgsProject.instance().transformContext()
