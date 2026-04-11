@@ -13,9 +13,9 @@ about=Plugin per scaricare gli elenchi regionali degli alberi monumentali d'Ital
     DMS in gradi decimali WGS84 e salva i dati in formato Shapefile o GeoPackage
     con tematizzazione dedicata (dimensione proporzionale alla circonferenza del fusto).
     Dati aggiornati al nono aggiornamento dell'elenco nazionale (23/10/2025).
-tracker=https://github.com/user/alberi_monumentali/issues
-repository=https://github.com/user/alberi_monumentali
-homepage=https://github.com/user/alberi_monumentali
+tracker=https://github.com/pigreco/ami_masaf/issues
+repository=https://github.com/pigreco/ami_masaf
+homepage=https://github.com/pigreco/ami_masaf
 hasProcessingProvider=no
 tags=alberi,monumentali,foreste,italia,masaf,natura,patrimonio
 category=Web
