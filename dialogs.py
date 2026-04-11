@@ -11,7 +11,9 @@ Permette di:
 """
 
 import os
+import re
 import pandas as pd
+from datetime import datetime
 
 from qgis.PyQt.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QGridLayout,
@@ -45,6 +47,7 @@ class AlberiDialog(QDialog):
         self._downloaded = []                 # lista (regione, path_xls)
 
         self._setup_ui()
+        self._update_layer_name()   # nome iniziale (nessuna selezione → "")
         self._refresh_urls()
 
     # ------------------------------------------------------------------ #
@@ -107,6 +110,7 @@ class AlberiDialog(QDialog):
         for r in REGIONI:
             item = QListWidgetItem(r)
             self.list_regions.addItem(item)
+        self.list_regions.itemSelectionChanged.connect(self._update_layer_name)
         reg_layout.addWidget(self.list_regions)
 
         root.addWidget(grp_reg)
@@ -137,7 +141,7 @@ class AlberiDialog(QDialog):
         fmt_layout.addLayout(dest_row, 1, 1)
 
         fmt_layout.addWidget(QLabel("Nome layer:"), 2, 0)
-        self.edit_name = QLineEdit("Alberi Monumentali")
+        self.edit_name = QLineEdit()
         fmt_layout.addWidget(self.edit_name, 2, 1)
 
         root.addWidget(grp_fmt)
@@ -217,6 +221,22 @@ class AlberiDialog(QDialog):
 
     def _select_none(self):
         self.list_regions.clearSelection()
+
+    def _update_layer_name(self):
+        """Aggiorna automaticamente il nome layer in base alla selezione."""
+        selected = self._get_selected_regions()
+        if len(selected) == 1:
+            name = re.sub(r"[^\w\-]", "_", selected[0])
+        elif selected:
+            name = "ami_" + datetime.now().strftime("%Y%m%d_%H%M%S")
+        else:
+            name = ""
+        self.edit_name.setText(name)
+
+    @staticmethod
+    def _region_to_filename(region_name: str) -> str:
+        """Converte il nome regione in una stringa usabile come nome file."""
+        return re.sub(r"[^\w\-]", "_", region_name)
 
     def _on_fmt_changed(self, idx):
         # Resetta il percorso quando si cambia formato
