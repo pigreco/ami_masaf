@@ -12,9 +12,25 @@ dal sito del Ministero dell'agricoltura, della sovranità alimentare e delle for
 - Applica una **tematizzazione** graduata basata sulla circonferenza del fusto (5 classi di verde)
 - Etichette con il nome volgare della specie (visibili a scale di dettaglio)
 
+## Dipendenze
+
+Il plugin usa esclusivamente pacchetti già inclusi in QGIS — non è necessario installare nulla di aggiuntivo.
+
+| Pacchetto | Versione minima | Note |
+|-----------|----------------|------|
+| **QGIS** | 3.20 | compatibile con QGIS 4.x / PyQt6 |
+| **pandas** | qualsiasi | incluso in QGIS |
+| **xlrd** | 1.x | incluso in QGIS; necessario per leggere i file `.xls` MASAF |
+
+> Se in un'installazione personalizzata di QGIS `xlrd` risultasse mancante,
+> installarlo con il gestore pacchetti integrato o con:
+> ```
+> pip install xlrd
+> ```
+
 ## Installazione
 
-1. Scarica il file `alberi_monumentali.zip`
+1. Scarica il file [`ami_masaf.zip`](https://github.com/pigreco/ami_masaf/releases/latest)
 2. In QGIS: **Plugin → Gestisci e installa plugin → Installa da ZIP**
 3. Seleziona il file ZIP e clicca **Installa plugin**
 
@@ -60,7 +76,6 @@ pubblicato dal MASAF ai sensi della Legge n. 10/2013.
 
 ## Note tecniche
 
-- Il plugin richiede `xlrd` (incluso in QGIS) per la lettura dei file `.xls`
 - Sistema di riferimento: **WGS84 (EPSG:4326)**
 - Le coordinate vengono validate (bbox Italia: lat 36–48, lon 6–19)
 - Gli alberi senza coordinate valide vengono saltati e conteggiati nel report finale
