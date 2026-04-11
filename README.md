@@ -12,6 +12,8 @@ dal sito del Ministero dell'agricoltura, della sovranità alimentare e delle for
 - Applica una **tematizzazione** graduata basata sulla circonferenza del fusto (5 classi di verde)
 - Etichette con il nome volgare della specie (visibili a scale di dettaglio)
 
+![](./gui.png)
+
 ## Dipendenze
 
 Il plugin usa esclusivamente pacchetti già inclusi in QGIS — non è necessario installare nulla di aggiuntivo.
