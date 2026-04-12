@@ -24,6 +24,7 @@ from qgis.PyQt.QtWidgets import (
     QWidget, QTextBrowser,
 )
 from qgis.PyQt.QtCore import Qt, QThread, QSize, pyqtSignal
+from qgis.PyQt.QtWidgets import QApplication
 from qgis.PyQt.QtGui import QFont, QColor, QPalette, QIcon
 
 import traceback
@@ -244,11 +245,35 @@ class AlberiDialog(QDialog):
         browser = QTextBrowser()
         browser.setOpenExternalLinks(True)
 
+        # Rileva tema scuro dalla palette Qt
+        is_dark = QApplication.palette().window().color().lightness() < 128
+        if is_dark:
+            theme_css = (
+                "body  { color: #E0E0E0; background: transparent; }"
+                "h2    { color: #81C784; }"
+                "h3    { color: #A5D6A7; }"
+                "code  { background: #3a3a3a; color: #E0E0E0; }"
+                ".note { background: #1B3A1F; border-left-color: #81C784; }"
+                "a     { color: #81C784; }"
+            )
+        else:
+            theme_css = (
+                "body  { color: #222; background: transparent; }"
+                "h2    { color: #1B5E20; }"
+                "h3    { color: #2D6A4F; }"
+                "code  { background: #f0f0f0; color: #222; }"
+                ".note { background: #E8F5E9; border-left-color: #2D6A4F; }"
+                "a     { color: #2D6A4F; }"
+            )
+
         plugin_dir = os.path.dirname(os.path.abspath(__file__))
         guide_path = os.path.join(plugin_dir, "help", "guida.html")
         try:
             with open(guide_path, encoding="utf-8") as fh:
-                browser.setHtml(fh.read())
+                html = fh.read()
+            # Inietta il CSS tema prima di </head> (sovrascrive i colori del file)
+            html = html.replace("</head>", f"<style>{theme_css}</style></head>", 1)
+            browser.setHtml(html)
         except OSError:
             browser.setHtml("<p>File di guida non trovato: <code>help/guida.html</code></p>")
 
