@@ -25,11 +25,15 @@ from qgis.PyQt.QtWidgets import (
 from qgis.PyQt.QtCore import Qt, QThread, QSize, pyqtSignal
 from qgis.PyQt.QtGui import QFont, QColor, QPalette, QIcon
 
+import traceback
+
 from qgis.core import (
     QgsProject,
     QgsVectorLayer,
     QgsVectorFileWriter,
     QgsCoordinateTransformContext,
+    QgsMessageLog,
+    Qgis,
 )
 
 from .downloader import REGIONI, FALLBACK_URLS, DownloadWorker, scrape_regional_urls
@@ -420,10 +424,25 @@ class AlberiDialog(QDialog):
             QMessageBox.critical(self, "Errore", "Il layer creato non è valido.")
             return
 
-        # Tematizzazione
+        # Aggiunge il layer punti alla mappa prima di tematizzare:
+        # su Linux, addMapLayer può caricare lo stile predefinito sovrascrivendo
+        # il renderer già impostato.
+        root = QgsProject.instance().layerTreeRoot()
+        if self.chk_add_map.isChecked():
+            QgsProject.instance().addMapLayer(layer, False)
+            root.insertLayer(0, layer)
+
+        # Tematizzazione (dopo addMapLayer per evitare override del renderer su Linux)
         regions_layer = None
         if self.chk_symbology.isChecked():
-            apply_graduated_symbology(layer)
+            try:
+                apply_graduated_symbology(layer)
+            except Exception:
+                QgsMessageLog.logMessage(
+                    traceback.format_exc(),
+                    "AlberiMonumentali",
+                    Qgis.MessageLevel.Critical,
+                )
             if len(self._regions_selected) == len(REGIONI):
                 plugin_dir = os.path.dirname(os.path.abspath(__file__))
                 regions_layer = apply_choropleth_regions(layer, plugin_dir)
@@ -448,14 +467,10 @@ class AlberiDialog(QDialog):
                         apply_choropleth_symbology(reloaded)
                         regions_layer = reloaded
 
-        # Aggiunge alla mappa (regioni sotto, punti sopra)
-        if self.chk_add_map.isChecked():
-            root = QgsProject.instance().layerTreeRoot()
-            if regions_layer is not None:
-                QgsProject.instance().addMapLayer(regions_layer, False)
-                root.insertLayer(0, regions_layer)
-            QgsProject.instance().addMapLayer(layer, False)
-            root.insertLayer(0, layer)
+        # Aggiunge il layer regioni sotto i punti (regioni sotto, punti sopra)
+        if self.chk_add_map.isChecked() and regions_layer is not None:
+            QgsProject.instance().addMapLayer(regions_layer, False)
+            root.insertLayer(1, regions_layer)
 
         # Report finale
         summary = (
