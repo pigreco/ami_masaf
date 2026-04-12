@@ -9,7 +9,7 @@ dal sito del Ministero dell'agricoltura, della sovranità alimentare e delle for
 - Aggiornamento automatico degli URL dalla pagina ufficiale
 - Converte le coordinate **DMS → gradi decimali WGS84**
 - Salva il risultato in **GeoPackage (.gpkg)** o **Shapefile (.shp)**
-- Applica una **tematizzazione** graduata basata sulla circonferenza del fusto (5 classi di verde)
+- **Visualizzazione multi-scala** con due tematizzazioni automatiche (vedi sotto)
 - Etichette con il nome volgare della specie (visibili a scale di dettaglio)
 
 ![](./gui.png)
@@ -43,6 +43,50 @@ Il plugin usa esclusivamente pacchetti già inclusi in QGIS — non è necessari
 3. Scegli il formato di output (GeoPackage consigliato)
 4. Seleziona la destinazione
 5. Clicca **Scarica e converti**
+
+## Tematizzazione multi-scala
+
+Il plugin carica automaticamente **due layer sovrapposti** con visibilità dipendente dalla scala,
+per favorire la lettura dei dati sia in visione d'insieme sia nel dettaglio.
+
+### Layer 1 — Coroplete regionale (zoom out)
+
+> Visibile quando il denominatore di scala è **≥ 1:200.000** (visione panoramica).
+
+Ogni regione è colorata con un'intensità proporzionale alla **densità di alberi monumentali**
+(alberi per km²). Usando la densità anziché il conteggio assoluto, il confronto tra regioni
+è equo indipendentemente dalla loro dimensione: una regione grande non appare artificialmente
+più ricca di alberi solo per la sua superficie.
+
+| Colore | Classe |
+|--------|--------|
+| Verde chiarissimo | Bassa densità |
+| Verde chiaro | — |
+| Verde medio | — |
+| Verde foresta | — |
+| Verde scuro | Alta densità |
+
+La tabella attributi del layer espone sia il campo `densita` (alberi/km²) sia `n_alberi`
+(conteggio assoluto). I confini regionali provengono dal dataset ISTAT 2025
+(incluso nel plugin, WGS84); densità e conteggio vengono calcolati dinamicamente
+dai punti scaricati.
+
+### Layer 2 — Punti individuali (zoom in)
+
+> Visibile a tutte le scale; a zoom out si sovrappone al coroplete come riferimento puntuale.
+
+Ogni albero è rappresentato da un **cerchio verde** di dimensione proporzionale
+alla **circonferenza del fusto** (`CIRCF_CM` / `CIRCONFERENZA_FUSTO_CM`), diviso in 5 classi:
+
+| Simbolo | Classe | Circonferenza |
+|---------|--------|---------------|
+| Cerchio piccolo — verde chiaro | Piccolo | < 200 cm |
+| — | Medio | 200–400 cm |
+| — | Grande | 400–600 cm |
+| — | Molto grande | 600–900 cm |
+| Cerchio grande — verde scuro | Monumentale | > 900 cm |
+
+A scale di dettaglio (≤ 1:50.000) vengono attivate le **etichette** con il nome volgare della specie.
 
 ## Struttura dei campi
 

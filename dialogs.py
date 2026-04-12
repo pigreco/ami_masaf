@@ -25,11 +25,16 @@ from qgis.PyQt.QtWidgets import (
 from qgis.PyQt.QtCore import Qt, QThread, QSize, pyqtSignal
 from qgis.PyQt.QtGui import QFont, QColor, QPalette, QIcon
 
-from qgis.core import QgsProject
+from qgis.core import (
+    QgsProject,
+    QgsVectorLayer,
+    QgsVectorFileWriter,
+    QgsCoordinateTransformContext,
+)
 
 from .downloader import REGIONI, FALLBACK_URLS, DownloadWorker, scrape_regional_urls
 from .converter import read_xls, dataframes_to_layer
-from .symbology import apply_graduated_symbology
+from .symbology import apply_graduated_symbology, apply_choropleth_regions, apply_choropleth_symbology
 
 
 class AlberiDialog(QDialog):
@@ -412,12 +417,41 @@ class AlberiDialog(QDialog):
             return
 
         # Tematizzazione
+        regions_layer = None
         if self.chk_symbology.isChecked():
             apply_graduated_symbology(layer)
+            if len(self._regions_selected) == len(REGIONI):
+                plugin_dir = os.path.dirname(os.path.abspath(__file__))
+                regions_layer = apply_choropleth_regions(layer, plugin_dir)
 
-        # Aggiunge alla mappa
+                if regions_layer and self._fmt == "GPKG":
+                    # Salva il layer regioni nello stesso GeoPackage dei punti
+                    opts = QgsVectorFileWriter.SaveVectorOptions()
+                    opts.driverName = "GPKG"
+                    opts.layerName = "regioni_densita_alberi"
+                    opts.actionOnExistingFile = (
+                        QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteLayer
+                    )
+                    QgsVectorFileWriter.writeAsVectorFormatV3(
+                        regions_layer, self._dest,
+                        QgsCoordinateTransformContext(), opts
+                    )
+                    reloaded = QgsVectorLayer(
+                        f"{self._dest}|layername=regioni_densita_alberi",
+                        "Regioni — densità alberi monumentali", "ogr"
+                    )
+                    if reloaded.isValid():
+                        apply_choropleth_symbology(reloaded)
+                        regions_layer = reloaded
+
+        # Aggiunge alla mappa (regioni sotto, punti sopra)
         if self.chk_add_map.isChecked():
-            QgsProject.instance().addMapLayer(layer)
+            root = QgsProject.instance().layerTreeRoot()
+            if regions_layer is not None:
+                QgsProject.instance().addMapLayer(regions_layer, False)
+                root.insertLayer(0, regions_layer)
+            QgsProject.instance().addMapLayer(layer, False)
+            root.insertLayer(0, layer)
 
         # Report finale
         summary = (
