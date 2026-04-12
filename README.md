@@ -125,3 +125,22 @@ pubblicato dal MASAF ai sensi della Legge n. 10/2013.
 - Sistema di riferimento: **WGS84 (EPSG:4326)**
 - Le coordinate vengono validate (bbox Italia: lat 36–48, lon 6–19)
 - Gli alberi senza coordinate valide vengono saltati e conteggiati nel report finale
+
+## Changelog
+
+### 1.2.1
+- Fix: aggiunta automatica dell'estensione `.gpkg` se mancante su Linux ([issue #2](https://github.com/pigreco/ami_masaf/issues/2), [PR #5](https://github.com/pigreco/ami_masaf/pull/5))
+- Fix: emoji 🌳 non renderizzata nel titolo del dialog su Linux — aggiunto font fallback (`Noto Color Emoji`, `Segoe UI Emoji`) ([issue #3](https://github.com/pigreco/ami_masaf/issues/3), [PR #6](https://github.com/pigreco/ami_masaf/pull/6))
+
+### 1.2
+- Visualizzazione multi-scala: layer coroplete regionale (densità alberi/km²) visibile a zoom out (scala ≥ 1:200.000)
+- Layer regioni ISTAT 2025 (WGS84) incluso nel plugin
+- Fix simbologia graduata su Linux dopo `addMapLayer`
+
+### 1.1
+- Porting QGIS 4 / PyQt6: enum qualificati, rimosso `QVariant`, fix URI memory layer, fix thread-safety refresh URL
+- Fix nome campo `CIRCONFERENZA_FUSTO_CM` in GeoPackage
+- Aggiornati pattern colonne XLS IX aggiornamento MASAF
+
+### 1.0
+- Versione iniziale: download regionale e nazionale, conversione DMS→DD, output SHP/GPKG, tematizzazione graduata per circonferenza fusto

@@ -3,7 +3,7 @@ name=Alberi Monumentali Italia
 qgisMinimumVersion=3.20
 qgisMaximumVersion=4.99
 description=Scarica e visualizza gli alberi monumentali d'Italia dal registro ufficiale MASAF
-version=1.2
+version=1.2.1
 author=Salvatore Fiandaca
 email=pigrecoinfinito@gmail.com
 about=Plugin per scaricare gli elenchi regionali degli alberi monumentali d'Italia
@@ -36,6 +36,8 @@ experimental=True
 deprecated=False
 server=False
 changelog=
+    1.2.1 Fix: aggiunta automatica estensione .gpkg se mancante su Linux (issue #2, PR #5).
+          Fix: emoji 🌳 non renderizzata nel titolo del dialog su Linux — font fallback Noto/Segoe (issue #3, PR #6).
     1.2 Visualizzazione multi-scala: aggiunto layer coroplete regionale (densità alberi per regione)
         visibile a zoom out (scala < 1:200.000); punti individuali a zoom in.
         Layer regioni ISTAT 2025 (WGS84) incluso nel plugin.
