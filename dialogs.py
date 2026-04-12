@@ -64,6 +64,7 @@ class AlberiDialog(QDialog):
         font = QFont()
         font.setPointSize(13)
         font.setBold(True)
+        font.setFamilies(["Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", ""])
         title.setFont(font)
         title.setStyleSheet("color: #1B5E20;")
         root.addWidget(title)
