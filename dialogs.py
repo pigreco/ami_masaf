@@ -321,6 +321,9 @@ class AlberiDialog(QDialog):
                     QMessageBox.critical(self, "Errore", f"Impossibile creare cartella:\n{e}")
                     return
         else:
+            if not dest.lower().endswith(".gpkg"):
+                dest = dest + ".gpkg"
+                self.edit_dest.setText(dest)
             parent_dir = os.path.dirname(dest) or "."
             if not os.path.isdir(parent_dir):
                 QMessageBox.critical(self, "Errore",
