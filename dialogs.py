@@ -245,37 +245,46 @@ class AlberiDialog(QDialog):
         browser = QTextBrowser()
         browser.setOpenExternalLinks(True)
 
-        # Rileva tema scuro dalla palette Qt
-        is_dark = QApplication.palette().window().color().lightness() < 128
+        # Ricava i colori direttamente dalla palette Qt — funziona con qualsiasi tema
+        pal = QApplication.palette()
+        is_dark = pal.window().color().lightness() < 128
+        text    = pal.windowText().color().name()   # colore testo principale
+        bg      = pal.window().color().name()        # colore sfondo
+
         if is_dark:
-            theme_css = (
-                "body  { color: #E0E0E0; background: transparent; }"
-                "h2    { color: #81C784; }"
-                "h3    { color: #A5D6A7; }"
-                "code  { background: #3a3a3a; color: #E0E0E0; }"
-                ".note { background: #1B3A1F; border-left-color: #81C784; }"
-                "a     { color: #81C784; }"
-            )
+            h2_col, h3_col, accent = "#81C784", "#A5D6A7", "#81C784"
+            code_bg  = pal.mid().color().name()      # grigio adattivo scuro
+            note_bg  = "#1B3A1F"
         else:
-            theme_css = (
-                "body  { color: #222; background: transparent; }"
-                "h2    { color: #1B5E20; }"
-                "h3    { color: #2D6A4F; }"
-                "code  { background: #f0f0f0; color: #222; }"
-                ".note { background: #E8F5E9; border-left-color: #2D6A4F; }"
-                "a     { color: #2D6A4F; }"
-            )
+            h2_col, h3_col, accent = "#1B5E20", "#2D6A4F", "#2D6A4F"
+            code_bg  = "#f0f0f0"
+            note_bg  = "#E8F5E9"
+
+        # Colori iniettati nel <head> — sovrascrivono il CSS strutturale del file
+        theme_css = (
+            f"body  {{ color: {text}; }}"
+            f"h2    {{ color: {h2_col}; }}"
+            f"h3    {{ color: {h3_col}; }}"
+            f"code  {{ background: {code_bg}; color: {text}; }}"
+            f".note {{ background: {note_bg}; border-left-color: {accent}; }}"
+            f"a     {{ color: {accent}; }}"
+        )
+
+        # Sfondo del widget allineato alla palette (evita il mismatch bianco/scuro)
+        browser.setStyleSheet(f"QTextBrowser {{ background-color: {bg}; }}")
 
         plugin_dir = os.path.dirname(os.path.abspath(__file__))
         guide_path = os.path.join(plugin_dir, "help", "guida.html")
         try:
             with open(guide_path, encoding="utf-8") as fh:
                 html = fh.read()
-            # Inietta il CSS tema prima di </head> (sovrascrive i colori del file)
             html = html.replace("</head>", f"<style>{theme_css}</style></head>", 1)
             browser.setHtml(html)
         except OSError:
-            browser.setHtml("<p>File di guida non trovato: <code>help/guida.html</code></p>")
+            browser.setHtml(
+                f"<p style='color:{text}'>File di guida non trovato: "
+                f"<code>help/guida.html</code></p>"
+            )
 
         layout.addWidget(browser)
         return tab
