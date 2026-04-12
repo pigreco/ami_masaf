@@ -70,6 +70,12 @@ class AlberiDialog(QDialog):
         root.setSpacing(10)
         root.setContentsMargins(14, 14, 14, 14)
 
+        # Colori adattativi al tema
+        pal = QApplication.palette()
+        is_dark = pal.window().color().lightness() < 128
+        title_color = "#81C784" if is_dark else "#1B5E20"
+        muted_color = pal.placeholderText().color().name()  # testo secondario, corretto per entrambi i temi
+
         # Titolo
         title = QLabel("🌳 Alberi Monumentali d'Italia")
         font = QFont()
@@ -77,14 +83,14 @@ class AlberiDialog(QDialog):
         font.setBold(True)
         font.setFamilies(["Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", ""])
         title.setFont(font)
-        title.setStyleSheet("color: #1B5E20;")
+        title.setStyleSheet(f"color: {title_color};")
         root.addWidget(title)
 
         subtitle = QLabel(
             "Fonte: MASAF — Ministero dell'agricoltura, della sovranità\n"
             "alimentare e delle foreste — Nono aggiornamento (23/10/2025)"
         )
-        subtitle.setStyleSheet("color: #555; font-size: 10px;")
+        subtitle.setStyleSheet(f"color: {muted_color}; font-size: 10px;")
         root.addWidget(subtitle)
 
         line = QFrame()
@@ -101,7 +107,7 @@ class AlberiDialog(QDialog):
 
         # ----- Progress (fuori dai tab, sempre visibile) -----
         self.lbl_status = QLabel("Pronto.")
-        self.lbl_status.setStyleSheet("color: #333; font-size: 10px;")
+        self.lbl_status.setStyleSheet(f"color: {muted_color}; font-size: 10px;")
         root.addWidget(self.lbl_status)
 
         self.progress_bar = QProgressBar()
