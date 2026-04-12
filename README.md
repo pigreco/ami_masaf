@@ -44,6 +44,8 @@ Il plugin usa esclusivamente pacchetti già inclusi in QGIS — non è necessari
 4. Seleziona la destinazione
 5. Clicca **Scarica e converti**
 
+> Il tab **Guida** nel dialog riepiloga tutte le opzioni e il funzionamento del plugin direttamente in QGIS.
+
 ## Tematizzazione multi-scala
 
 Il plugin carica automaticamente **due layer sovrapposti** con visibilità dipendente dalla scala,
@@ -127,6 +129,10 @@ pubblicato dal MASAF ai sensi della Legge n. 10/2013.
 - Gli alberi senza coordinate valide vengono saltati e conteggiati nel report finale
 
 ## Changelog
+
+### 1.2.3
+- Aggiunto tab **Guida** nel dialog con istruzioni d'uso complete (selezione regioni, formati, opzioni, coordinate, licenza dati)
+- Testo della guida in file esterno `help/guida.html`, modificabile senza toccare il codice
 
 ### 1.2.2
 - Fix: simbologia graduata non applicata su Linux — `addMapLayer` anticipato prima di `apply_graduated_symbology` per evitare override del renderer ([issue #4](https://github.com/pigreco/ami_masaf/issues/4), [PR #7](https://github.com/pigreco/ami_masaf/pull/7))

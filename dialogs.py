@@ -20,7 +20,8 @@ from qgis.PyQt.QtWidgets import (
     QPushButton, QLabel, QListWidget, QListWidgetItem,
     QComboBox, QLineEdit, QFileDialog, QProgressBar,
     QMessageBox, QGroupBox, QCheckBox, QSizePolicy,
-    QAbstractItemView, QFrame, QSpacerItem,
+    QAbstractItemView, QFrame, QSpacerItem, QTabWidget,
+    QWidget, QTextBrowser,
 )
 from qgis.PyQt.QtCore import Qt, QThread, QSize, pyqtSignal
 from qgis.PyQt.QtGui import QFont, QColor, QPalette, QIcon
@@ -90,88 +91,14 @@ class AlberiDialog(QDialog):
         line.setFrameShadow(QFrame.Shadow.Sunken)
         root.addWidget(line)
 
-        # ----- Selezione Regioni -----
-        grp_reg = QGroupBox("Selezione Regioni")
-        grp_reg.setStyleSheet(
-            "QGroupBox { font-weight: bold; color: #2D6A4F; border: 1px solid #74C69D; "
-            "border-radius: 4px; margin-top: 6px; padding-top: 6px; }"
-        )
-        reg_layout = QVBoxLayout(grp_reg)
+        # ----- Tab widget -----
+        self.tabs = QTabWidget()
+        root.addWidget(self.tabs)
 
-        btn_row = QHBoxLayout()
-        self.btn_all = QPushButton("✔ Tutta Italia")
-        self.btn_none = QPushButton("✘ Deseleziona tutto")
-        self.btn_all.setFixedHeight(26)
-        self.btn_none.setFixedHeight(26)
-        self.btn_all.clicked.connect(self._select_all)
-        self.btn_none.clicked.connect(self._select_none)
-        btn_row.addWidget(self.btn_all)
-        btn_row.addWidget(self.btn_none)
-        btn_row.addStretch()
-        reg_layout.addLayout(btn_row)
+        self.tabs.addTab(self._build_main_tab(), "Scarica")
+        self.tabs.addTab(self._build_guide_tab(), "Guida")
 
-        self.list_regions = QListWidget()
-        self.list_regions.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
-        self.list_regions.setFixedHeight(200)
-        self.list_regions.setStyleSheet(
-            "QListWidget::item:selected { background-color: #2D6A4F; color: white; }"
-            "QListWidget::item:selected:!active { background-color: #2D6A4F; color: white; }"
-        )
-        for r in REGIONI:
-            item = QListWidgetItem(r)
-            self.list_regions.addItem(item)
-        self.list_regions.itemSelectionChanged.connect(self._update_layer_name)
-        reg_layout.addWidget(self.list_regions)
-
-        root.addWidget(grp_reg)
-
-        # ----- Formato output -----
-        grp_fmt = QGroupBox("Formato di output")
-        grp_fmt.setStyleSheet(
-            "QGroupBox { font-weight: bold; color: #2D6A4F; border: 1px solid #74C69D; "
-            "border-radius: 4px; margin-top: 6px; padding-top: 6px; }"
-        )
-        fmt_layout = QGridLayout(grp_fmt)
-
-        fmt_layout.addWidget(QLabel("Formato:"), 0, 0)
-        self.combo_fmt = QComboBox()
-        self.combo_fmt.addItems(["GeoPackage (.gpkg)", "Shapefile (.shp)"])
-        self.combo_fmt.currentIndexChanged.connect(self._on_fmt_changed)
-        fmt_layout.addWidget(self.combo_fmt, 0, 1)
-
-        fmt_layout.addWidget(QLabel("Destinazione:"), 1, 0)
-        dest_row = QHBoxLayout()
-        self.edit_dest = QLineEdit()
-        self.edit_dest.setPlaceholderText("Seleziona cartella o file…")
-        self.btn_browse = QPushButton("…")
-        self.btn_browse.setFixedWidth(32)
-        self.btn_browse.clicked.connect(self._browse_dest)
-        dest_row.addWidget(self.edit_dest)
-        dest_row.addWidget(self.btn_browse)
-        fmt_layout.addLayout(dest_row, 1, 1)
-
-        fmt_layout.addWidget(QLabel("Nome layer:"), 2, 0)
-        self.edit_name = QLineEdit()
-        fmt_layout.addWidget(self.edit_name, 2, 1)
-
-        root.addWidget(grp_fmt)
-
-        # ----- Opzioni -----
-        grp_opt = QGroupBox("Opzioni")
-        grp_opt.setStyleSheet(
-            "QGroupBox { font-weight: bold; color: #2D6A4F; border: 1px solid #74C69D; "
-            "border-radius: 4px; margin-top: 6px; padding-top: 6px; }"
-        )
-        opt_layout = QVBoxLayout(grp_opt)
-        self.chk_symbology = QCheckBox("Applica tematizzazione alberi (graduata per circonferenza)")
-        self.chk_symbology.setChecked(True)
-        self.chk_add_map = QCheckBox("Aggiungi automaticamente il layer alla mappa")
-        self.chk_add_map.setChecked(True)
-        opt_layout.addWidget(self.chk_symbology)
-        opt_layout.addWidget(self.chk_add_map)
-        root.addWidget(grp_opt)
-
-        # ----- Progress -----
+        # ----- Progress (fuori dai tab, sempre visibile) -----
         self.lbl_status = QLabel("Pronto.")
         self.lbl_status.setStyleSheet("color: #333; font-size: 10px;")
         root.addWidget(self.lbl_status)
@@ -220,6 +147,113 @@ class AlberiDialog(QDialog):
         credits.setStyleSheet("font-size: 9px; color: #888;")
         credits.setAlignment(Qt.AlignmentFlag.AlignRight)
         root.addWidget(credits)
+
+    def _build_main_tab(self) -> QWidget:
+        """Costruisce il tab principale con regioni, formato e opzioni."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setSpacing(8)
+        layout.setContentsMargins(0, 8, 0, 0)
+
+        grp_style = (
+            "QGroupBox { font-weight: bold; color: #2D6A4F; border: 1px solid #74C69D; "
+            "border-radius: 4px; margin-top: 6px; padding-top: 6px; }"
+        )
+
+        # ----- Selezione Regioni -----
+        grp_reg = QGroupBox("Selezione Regioni")
+        grp_reg.setStyleSheet(grp_style)
+        reg_layout = QVBoxLayout(grp_reg)
+
+        btn_row = QHBoxLayout()
+        self.btn_all = QPushButton("✔ Tutta Italia")
+        self.btn_none = QPushButton("✘ Deseleziona tutto")
+        self.btn_all.setFixedHeight(26)
+        self.btn_none.setFixedHeight(26)
+        self.btn_all.clicked.connect(self._select_all)
+        self.btn_none.clicked.connect(self._select_none)
+        btn_row.addWidget(self.btn_all)
+        btn_row.addWidget(self.btn_none)
+        btn_row.addStretch()
+        reg_layout.addLayout(btn_row)
+
+        self.list_regions = QListWidget()
+        self.list_regions.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
+        self.list_regions.setFixedHeight(180)
+        self.list_regions.setStyleSheet(
+            "QListWidget::item:selected { background-color: #2D6A4F; color: white; }"
+            "QListWidget::item:selected:!active { background-color: #2D6A4F; color: white; }"
+        )
+        for r in REGIONI:
+            item = QListWidgetItem(r)
+            self.list_regions.addItem(item)
+        self.list_regions.itemSelectionChanged.connect(self._update_layer_name)
+        reg_layout.addWidget(self.list_regions)
+
+        layout.addWidget(grp_reg)
+
+        # ----- Formato output -----
+        grp_fmt = QGroupBox("Formato di output")
+        grp_fmt.setStyleSheet(grp_style)
+        fmt_layout = QGridLayout(grp_fmt)
+
+        fmt_layout.addWidget(QLabel("Formato:"), 0, 0)
+        self.combo_fmt = QComboBox()
+        self.combo_fmt.addItems(["GeoPackage (.gpkg)", "Shapefile (.shp)"])
+        self.combo_fmt.currentIndexChanged.connect(self._on_fmt_changed)
+        fmt_layout.addWidget(self.combo_fmt, 0, 1)
+
+        fmt_layout.addWidget(QLabel("Destinazione:"), 1, 0)
+        dest_row = QHBoxLayout()
+        self.edit_dest = QLineEdit()
+        self.edit_dest.setPlaceholderText("Seleziona cartella o file…")
+        self.btn_browse = QPushButton("…")
+        self.btn_browse.setFixedWidth(32)
+        self.btn_browse.clicked.connect(self._browse_dest)
+        dest_row.addWidget(self.edit_dest)
+        dest_row.addWidget(self.btn_browse)
+        fmt_layout.addLayout(dest_row, 1, 1)
+
+        fmt_layout.addWidget(QLabel("Nome layer:"), 2, 0)
+        self.edit_name = QLineEdit()
+        fmt_layout.addWidget(self.edit_name, 2, 1)
+
+        layout.addWidget(grp_fmt)
+
+        # ----- Opzioni -----
+        grp_opt = QGroupBox("Opzioni")
+        grp_opt.setStyleSheet(grp_style)
+        opt_layout = QVBoxLayout(grp_opt)
+        self.chk_symbology = QCheckBox("Applica tematizzazione alberi (graduata per circonferenza)")
+        self.chk_symbology.setChecked(True)
+        self.chk_add_map = QCheckBox("Aggiungi automaticamente il layer alla mappa")
+        self.chk_add_map.setChecked(True)
+        opt_layout.addWidget(self.chk_symbology)
+        opt_layout.addWidget(self.chk_add_map)
+        layout.addWidget(grp_opt)
+
+        layout.addStretch()
+        return tab
+
+    def _build_guide_tab(self) -> QWidget:
+        """Costruisce il tab Guida caricando help/guida.html dalla cartella del plugin."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(0, 8, 0, 0)
+
+        browser = QTextBrowser()
+        browser.setOpenExternalLinks(True)
+
+        plugin_dir = os.path.dirname(os.path.abspath(__file__))
+        guide_path = os.path.join(plugin_dir, "help", "guida.html")
+        try:
+            with open(guide_path, encoding="utf-8") as fh:
+                browser.setHtml(fh.read())
+        except OSError:
+            browser.setHtml("<p>File di guida non trovato: <code>help/guida.html</code></p>")
+
+        layout.addWidget(browser)
+        return tab
 
     # ------------------------------------------------------------------ #
     #  Logica UI                                                           #

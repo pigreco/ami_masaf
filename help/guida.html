@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<style>
+  body  { font-family: sans-serif; font-size: 11px; color: #222; margin: 4px 8px; }
+  h2    { color: #1B5E20; margin-bottom: 4px; }
+  h3    { color: #2D6A4F; margin-top: 12px; margin-bottom: 2px; }
+  ul    { margin-top: 2px; margin-bottom: 4px; padding-left: 18px; }
+  li    { margin-bottom: 3px; }
+  code  { background: #f0f0f0; border-radius: 3px; padding: 1px 4px; font-size: 10px; }
+  .note { background: #E8F5E9; border-left: 3px solid #2D6A4F;
+          padding: 6px 10px; margin: 8px 0; border-radius: 0 4px 4px 0; }
+  a     { color: #2D6A4F; }
+</style>
+</head>
+<body>
+
+<h2>Guida all'uso del plugin</h2>
+
+<h3>1. Selezione delle regioni</h3>
+<ul>
+  <li>Clicca su una o più regioni nell'elenco (tieni premuto <code>Ctrl</code> per la selezione multipla).</li>
+  <li>Usa <b>Tutta Italia</b> per selezionarle tutte in un colpo solo, oppure <b>Deseleziona tutto</b> per azzerare la selezione.</li>
+  <li>Il campo <i>Nome layer</i> si aggiorna automaticamente: con una sola regione usa il nome della regione, con più regioni genera un nome con data e ora.</li>
+</ul>
+
+<h3>2. Formato di output</h3>
+<ul>
+  <li><b>GeoPackage (.gpkg)</b> — un unico file che contiene tutti i punti (e, se è stata selezionata tutta Italia, anche il layer di coropleta delle regioni). Consigliato per comodità.</li>
+  <li><b>Shapefile (.shp)</b> — genera più file nella cartella scelta, uno per regione. I nomi dei campi sono limitati a 10 caratteri.</li>
+  <li>Clicca su <b>…</b> per scegliere il file di destinazione (GeoPackage) o la cartella (Shapefile).</li>
+</ul>
+
+<h3>3. Opzioni</h3>
+<ul>
+  <li><b>Applica tematizzazione</b> — colora i punti con una simbologia graduata in 5 classi basata sulla
+      circonferenza del fusto (<code>CIRCF_CM</code> per SHP, <code>CIRCONFERENZA_FUSTO_CM</code> per GPKG),
+      dal verde chiaro al verde scuro. Se viene scaricata tutta Italia viene aggiunto anche un layer di
+      coropleta per densità regionale.</li>
+  <li><b>Aggiungi alla mappa</b> — carica automaticamente il layer appena creato nella mappa di QGIS.</li>
+</ul>
+
+<h3>4. Scarica e converti</h3>
+<ul>
+  <li>Premi <b>Scarica e converti</b> per avviare il download dei file XLS dal sito MASAF.</li>
+  <li>La barra di avanzamento mostra il progresso per regione.</li>
+  <li>Al termine viene mostrato un riepilogo con il numero di alberi scritti e quelli saltati
+      (coordinate mancanti o fuori dai confini italiani).</li>
+  <li>Per interrompere il download premi <b>Annulla</b>.</li>
+</ul>
+
+<h3>5. Dati e coordinate</h3>
+<ul>
+  <li>Le coordinate vengono lette in formato DMS (gradi, minuti, secondi) e convertite in gradi decimali
+      WGS84 (EPSG:4326).</li>
+  <li>Gli alberi con coordinate mancanti o al di fuori del territorio italiano (lat 36–48°N, lon 6–19°E)
+      vengono automaticamente esclusi e conteggiati come <i>saltati</i>.</li>
+  <li>I dati vengono aggiornati periodicamente dal MASAF; il plugin verifica all'avvio se sono disponibili
+      URL più recenti.</li>
+</ul>
+
+<div class="note">
+  <b>Fonte dati:</b>
+  <a href="https://www.masaf.gov.it/flex/cm/pages/ServeBLOB.php/L/IT/IDPagina/11260">
+  Ministero dell'agricoltura, della sovranità alimentare e delle foreste (MASAF)</a> —
+  Nono aggiornamento (23/10/2025) — Licenza <b>CC BY 4.0</b>.
+</div>
+
+</body>
+</html>
