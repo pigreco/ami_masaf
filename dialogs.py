@@ -25,7 +25,9 @@ from qgis.PyQt.QtWidgets import (
 from qgis.PyQt.QtCore import Qt, QThread, QSize, pyqtSignal
 from qgis.PyQt.QtGui import QFont, QColor, QPalette, QIcon
 
-from qgis.core import QgsProject
+import traceback
+
+from qgis.core import QgsProject, QgsMessageLog, Qgis
 
 from .downloader import REGIONI, FALLBACK_URLS, DownloadWorker, scrape_regional_urls
 from .converter import read_xls, dataframes_to_layer
@@ -411,13 +413,21 @@ class AlberiDialog(QDialog):
             QMessageBox.critical(self, "Errore", "Il layer creato non è valido.")
             return
 
-        # Tematizzazione
-        if self.chk_symbology.isChecked():
-            apply_graduated_symbology(layer)
-
-        # Aggiunge alla mappa
+        # Aggiunge alla mappa prima di tematizzare: su Linux, addMapLayer può
+        # caricare lo stile predefinito sovrascrivendo il renderer già impostato.
         if self.chk_add_map.isChecked():
             QgsProject.instance().addMapLayer(layer)
+
+        # Tematizzazione (dopo addMapLayer per evitare override del renderer)
+        if self.chk_symbology.isChecked():
+            try:
+                apply_graduated_symbology(layer)
+            except Exception:
+                QgsMessageLog.logMessage(
+                    traceback.format_exc(),
+                    "AlberiMonumentali",
+                    Qgis.MessageLevel.Critical,
+                )
 
         # Report finale
         summary = (
