@@ -1,21 +1,89 @@
 # -*- coding: utf-8 -*-
 """Modulo principale del plugin Alberi Monumentali Italia."""
 
+import sys
 import os
-from qgis.PyQt.QtWidgets import QAction, QMessageBox
+import subprocess
+from qgis.PyQt.QtWidgets import QAction, QMessageBox, QApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtCore import QCoreApplication
+
+
+def _install_deps(parent=None):
+    """Verifica e installa le dipendenze mancanti (pandas, xlrd).
+
+    Ritorna True se le dipendenze sono disponibili, False altrimenti.
+    """
+    required = ["pandas", "xlrd"]
+    missing = [pkg for pkg in required if not _is_importable(pkg)]
+
+    if not missing:
+        return True
+
+    risposta = QMessageBox.question(
+        parent,
+        "Alberi Monumentali — Dipendenze mancanti",
+        (
+            "Il plugin richiede i seguenti pacchetti Python non ancora installati:\n\n"
+            + "".join(f"  • {p}\n" for p in missing)
+            + "\nVuoi installarli automaticamente adesso?\n"
+            "(Potrebbe essere necessario riavviare QGIS al termine.)"
+        ),
+        QMessageBox.Yes | QMessageBox.No,
+        QMessageBox.Yes,
+    )
+
+    if risposta != QMessageBox.Yes:
+        QMessageBox.warning(
+            parent,
+            "Alberi Monumentali — Installazione annullata",
+            (
+                "Il plugin non può funzionare senza le dipendenze.\n\n"
+                "Installale manualmente dalla OSGeo4W Shell (Windows) "
+                "o dal terminale:\n\n"
+                f"  pip install {' '.join(missing)}"
+            ),
+        )
+        return False
+
+    try:
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", "--user"] + missing
+        )
+        QMessageBox.information(
+            parent,
+            "Alberi Monumentali — Installazione completata",
+            (
+                f"Pacchetti installati: {', '.join(missing)}.\n\n"
+                "Riavvia QGIS per rendere effettive le modifiche."
+            ),
+        )
+    except Exception as exc:
+        QMessageBox.critical(
+            parent,
+            "Alberi Monumentali — Errore installazione",
+            (
+                f"Impossibile installare le dipendenze automaticamente:\n{exc}\n\n"
+                "Installale manualmente:\n"
+                f"  pip install {' '.join(missing)}"
+            ),
+        )
+
+    return False  # richiede riavvio
+
+
+def _is_importable(name):
+    try:
+        __import__(name)
+        return True
+    except ImportError:
+        return False
 
 
 class AlberiMonumentali:
     """Classe principale del plugin Alberi Monumentali Italia."""
 
     def __init__(self, iface):
-        """Inizializza il plugin.
-
-        Args:
-            iface: istanza dell'interfaccia QGIS
-        """
         self.iface = iface
         self.plugin_dir = os.path.dirname(__file__)
         self.actions = []
@@ -67,6 +135,8 @@ class AlberiMonumentali:
 
     def run(self):
         """Apre il dialogo principale del plugin."""
+        if not _install_deps(self.iface.mainWindow()):
+            return
         from .dialogs import AlberiDialog
         self.dlg = AlberiDialog(self.iface, self.iface.mainWindow())
         self.dlg.show()
