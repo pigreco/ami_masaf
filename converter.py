@@ -11,7 +11,6 @@ Strategia:
 
 import re
 import os
-import pandas as pd
 
 from qgis.core import (
     QgsVectorFileWriter,
@@ -208,6 +207,7 @@ def read_xls(filepath):
             "dalla OSGeo4W Shell, poi riavvia QGIS."
         )
     try:
+        import pandas as pd
         return pd.read_excel(filepath, engine="xlrd", header=0)
     except Exception as e:
         raise ValueError(f"Impossibile leggere il file XLS: {e}")
