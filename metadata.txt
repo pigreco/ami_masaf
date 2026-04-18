@@ -6,7 +6,15 @@ description=Scarica e visualizza gli alberi monumentali d'Italia dal registro uf
 version=1.2.3
 author=Salvatore Fiandaca
 email=pigrecoinfinito@gmail.com
-about=Plugin per scaricare gli elenchi regionali degli alberi monumentali d'Italia
+about=Plugin to download Italy's monumental trees registry from the official MASAF website
+    (Ministry of Agriculture). Supports single-region or full-Italy download, converts
+    DMS coordinates to WGS84 decimal degrees, and saves data as Shapefile or GeoPackage
+    with graduated symbology (size proportional to trunk circumference).
+    Data license: Creative Commons CC BY 4.0.
+    Plugin developed with Claude AI (Anthropic) support.
+
+    ITALIANO:
+    Plugin per scaricare gli elenchi regionali degli alberi monumentali d'Italia
     dal sito del Ministero dell'agricoltura, della sovranità alimentare e delle foreste (MASAF).
     Permette di selezionare una o più regioni oppure tutta l'Italia, converte le coordinate
     DMS in gradi decimali WGS84 e salva i dati in formato Shapefile o GeoPackage
@@ -18,13 +26,6 @@ about=Plugin per scaricare gli elenchi regionali degli alberi monumentali d'Ital
     Licenza dati: Creative Commons CC BY 4.0.
     Plugin sviluppato con il supporto di Claude AI (Anthropic).
 
-    ENGLISH:
-    Plugin to download Italy's monumental trees registry from the official MASAF website
-    (Ministry of Agriculture). Supports single-region or full-Italy download, converts
-    DMS coordinates to WGS84 decimal degrees, and saves data as Shapefile or GeoPackage
-    with graduated symbology (size proportional to trunk circumference).
-    Data license: Creative Commons CC BY 4.0.
-    Plugin developed with Claude AI (Anthropic) support.
 tracker=https://github.com/pigreco/ami_masaf/issues
 repository=https://github.com/pigreco/ami_masaf
 homepage=https://github.com/pigreco/ami_masaf
