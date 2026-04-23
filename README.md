@@ -126,6 +126,10 @@ pubblicato dal MASAF ai sensi della Legge n. 10/2013.
 
 ## Changelog
 
+### 1.2.5
+- Merge branch `fix/auto-install-deps` su master
+- Aggiornamento documentazione: README e metadata allineati a tutte le modifiche della 1.2.4
+
 ### 1.2.4
 - Auto-installazione di `pandas` e `xlrd` al primo avvio se non presenti nell'ambiente QGIS ([issue #1](https://github.com/pigreco/ami_masaf/issues/1))
 - Import di `pandas`/`xlrd` spostato dentro `read_xls()` (lazy import — evita errori di avvio se i pacchetti non sono ancora installati)
