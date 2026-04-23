@@ -37,8 +37,10 @@ experimental=True
 deprecated=False
 server=False
 changelog=
-    1.2.4 Fix Bandit B310: aggiunto # nosec B310 alle chiamate urlopen in downloader.py
-          per silenziare il falso positivo nel controllo QGIS Plugin Repository.
+    1.2.4 Auto-installazione di pandas e xlrd al primo avvio se mancanti (issue #1).
+          Import pandas/xlrd spostato in read_xls() (lazy import).
+          _install_deps() richiamato in run() invece di classFactory().
+          Fix Bandit B310: aggiunto # nosec B310 alle chiamate urlopen in downloader.py.
     1.2.3 Aggiunto tab Guida nel dialog con istruzioni d'uso; testo in file esterno help/guida.html.
     1.2.2 Fix: simbologia graduata non applicata su Linux — addMapLayer anticipato prima di
           apply_graduated_symbology per evitare override del renderer (issue #4, PR #7).

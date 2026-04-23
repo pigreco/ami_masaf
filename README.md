@@ -16,19 +16,15 @@ dal sito del Ministero dell'agricoltura, della sovranità alimentare e delle for
 
 ## Dipendenze
 
-Il plugin usa esclusivamente pacchetti già inclusi in QGIS — non è necessario installare nulla di aggiuntivo.
-
 | Pacchetto | Versione minima | Note |
 |-----------|----------------|------|
 | **QGIS** | 3.20 | compatibile con QGIS 4.x / PyQt6 |
-| **pandas** | qualsiasi | incluso in QGIS |
-| **xlrd** | 1.x | incluso in QGIS; necessario per leggere i file `.xls` MASAF |
+| **pandas** | qualsiasi | richiesto; installato automaticamente se mancante |
+| **xlrd** | 1.x | richiesto per leggere i file `.xls` MASAF; installato automaticamente se mancante |
 
-> Se in un'installazione personalizzata di QGIS `xlrd` risultasse mancante,
-> installarlo con il gestore pacchetti integrato o con:
-> ```
-> pip install xlrd
-> ```
+> Al primo avvio il plugin verifica la presenza di `pandas` e `xlrd`.
+> Se uno o entrambi mancano, li installa automaticamente via `pip --user` senza
+> che l'utente debba fare nulla. Riavviare QGIS dopo l'installazione automatica.
 
 ## Installazione
 
@@ -131,6 +127,9 @@ pubblicato dal MASAF ai sensi della Legge n. 10/2013.
 ## Changelog
 
 ### 1.2.4
+- Auto-installazione di `pandas` e `xlrd` al primo avvio se non presenti nell'ambiente QGIS ([issue #1](https://github.com/pigreco/ami_masaf/issues/1))
+- Import di `pandas`/`xlrd` spostato dentro `read_xls()` (lazy import — evita errori di avvio se i pacchetti non sono ancora installati)
+- `_install_deps()` richiamato in `run()` invece di `classFactory()` per compatibilità con il ciclo di vita del plugin QGIS
 - Fix: aggiunto `# nosec B310` alle chiamate `urlopen` in `downloader.py` per silenziare il falso positivo Bandit B310 nel controllo QGIS Plugin Repository
 
 ### 1.2.3
