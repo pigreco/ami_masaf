@@ -130,6 +130,9 @@ pubblicato dal MASAF ai sensi della Legge n. 10/2013.
 
 ## Changelog
 
+### 1.2.4
+- Fix: aggiunto `# nosec B310` alle chiamate `urlopen` in `downloader.py` per silenziare il falso positivo Bandit B310 nel controllo QGIS Plugin Repository
+
 ### 1.2.3
 - Aggiunto tab **Guida** nel dialog con istruzioni d'uso complete (selezione regioni, formati, opzioni, coordinate, licenza dati)
 - Testo della guida in file esterno `help/guida.html`, modificabile senza toccare il codice

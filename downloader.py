@@ -56,7 +56,7 @@ def scrape_regional_urls():
             MASAF_PAGE_URL,
             headers={"User-Agent": "Mozilla/5.0 (QGIS plugin AlberiMonumentali/1.0)"}
         )
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:  # nosec B310
             html = resp.read().decode("iso-8859-1", errors="replace")
 
         # Trova tutti i link ai file XLS nella sezione elenchi regionali
@@ -125,7 +125,7 @@ class DownloadWorker(QThread):
                     url,
                     headers={"User-Agent": "Mozilla/5.0 (QGIS plugin AlberiMonumentali/1.0)"}
                 )
-                with urllib.request.urlopen(req, timeout=30) as resp:
+                with urllib.request.urlopen(req, timeout=30) as resp:  # nosec B310
                     data = resp.read()
 
                 # Salva in file temporaneo
