@@ -4,85 +4,11 @@
 import sys
 import os
 import subprocess
-from qgis.PyQt.QtWidgets import QAction, QMessageBox, QApplication
+from qgis.PyQt.QtWidgets import QAction, QMessageBox, QApplication, QPushButton, QMessageBox 
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtCore import QCoreApplication
-
-
-def _install_deps(parent=None):
-    """Verifica e installa le dipendenze mancanti (pandas, xlrd).
-
-    Ritorna True se le dipendenze sono disponibili, False altrimenti.
-    """
-    required = ["pandas", "xlrd"]
-    missing = [pkg for pkg in required if not _is_importable(pkg)]
-
-    if not missing:
-        return True
-
-    # PyQt6 moved enum values to QMessageBox.StandardButton.*
-    _btn = getattr(QMessageBox, "StandardButton", QMessageBox)
-    YES = _btn.Yes
-    NO = _btn.No
-
-    risposta = QMessageBox.question(
-        parent,
-        "Alberi Monumentali — Dipendenze mancanti",
-        (
-            "Il plugin richiede i seguenti pacchetti Python non ancora installati:\n\n"
-            + "".join(f"  • {p}\n" for p in missing)
-            + "\nVuoi installarli automaticamente adesso?\n"
-            "(Potrebbe essere necessario riavviare QGIS al termine.)"
-        ),
-        YES | NO,
-        YES,
-    )
-
-    if risposta != YES:
-        QMessageBox.warning(
-            parent,
-            "Alberi Monumentali — Installazione annullata",
-            (
-                "Il plugin non può funzionare senza le dipendenze.\n\n"
-                "Installale manualmente dalla OSGeo4W Shell (Windows) "
-                "o dal terminale:\n\n"
-                f"  pip install {' '.join(missing)}"
-            ),
-        )
-        return False
-
-    try:
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", "--user"] + missing
-        )
-        QMessageBox.information(
-            parent,
-            "Alberi Monumentali — Installazione completata",
-            (
-                f"Pacchetti installati: {', '.join(missing)}.\n\n"
-                "Riavvia QGIS per rendere effettive le modifiche."
-            ),
-        )
-    except Exception as exc:
-        QMessageBox.critical(
-            parent,
-            "Alberi Monumentali — Errore installazione",
-            (
-                f"Impossibile installare le dipendenze automaticamente:\n{exc}\n\n"
-                "Installale manualmente:\n"
-                f"  pip install {' '.join(missing)}"
-            ),
-        )
-
-    return False  # richiede riavvio
-
-
-def _is_importable(name):
-    try:
-        __import__(name)
-        return True
-    except ImportError:
-        return False
+from qgis.utils import iface
+from qgis.core import Qgis
 
 
 class AlberiMonumentali:
@@ -95,6 +21,11 @@ class AlberiMonumentali:
         self.menu = self.tr('&Alberi Monumentali')
         self.toolbar = None
         self.dlg = None
+        
+        self.required_modules = {
+            "pandas": "pandas",
+            "xlrd": "xlrd"
+        }
 
     def tr(self, message):
         """Traduce una stringa."""
@@ -119,6 +50,11 @@ class AlberiMonumentali:
 
     def initGui(self):
         """Crea voci di menu e icone toolbar."""
+        
+        moduli_richiesti = ["pandas", "requests", "scipy"]
+        
+        self.check_dependencies()
+        
         self.toolbar = self.iface.addToolBar('AlberiMonumentali')
         self.toolbar.setObjectName('AlberiMonumentaliToolbar')
 
@@ -128,7 +64,76 @@ class AlberiMonumentali:
             text=self.tr('Alberi Monumentali Italia'),
             callback=self.run,
             parent=self.iface.mainWindow()
-        )
+            )
+
+    def check_dependencies(self):
+        """Verifica i moduli e gestisce i messaggi all'utente."""
+        missing_import_names = []
+        missing_pip_names = []
+
+        for imp_name, pip_name in self.required_modules.items():
+            try:
+                __import__(imp_name)
+            except ImportError:
+                missing_import_names.append(imp_name)
+                missing_pip_names.append(pip_name)
+
+        if missing_pip_names:
+            self.ask_permission_to_install(missing_pip_names)
+        else:
+            self.iface.messageBar().pushMessage(
+                "Plugin Pronto", 
+                "Tutte le dipendenze Python sono soddisfatte.", 
+                level=Qgis.MessageLevel.Success, 
+                duration=3
+            )
+
+    def ask_permission_to_install(self, pip_packages):
+        """Crea la barra con il pulsante di consenso."""
+        msg = f"Il plugin Alberi Monumentali richiede moduli extra: {', '.join(pip_packages)}. Vuoi installarli?"
+        msg_bar = self.iface.messageBar().createMessage("Dipendenze Mancanti", msg)
+        
+        btn = QPushButton(f"Installa ora ({len(pip_packages)})")
+        # Connettiamo il click alla funzione di installazione reale
+        btn.clicked.connect(lambda: [
+            self.iface.messageBar().clearWidgets(), 
+            self.run_installation(pip_packages)
+        ])
+        
+        msg_bar.layout().addWidget(btn)
+        self.iface.messageBar().pushWidget(msg_bar, Qgis.MessageLevel.Warning)
+
+    def run_installation(self, pip_packages):
+        """Esegue l'installazione tecnica."""
+        try:
+            # Individua l'eseguibile corretto per Windows/OSGeo4W
+            python_exe = sys.executable.replace("qgis-bin.exe", "python-qgis.bat")
+            if not os.path.exists(python_exe):
+                python_exe = sys.executable
+            
+            is_windows = os.name == 'nt'
+
+            # Installazione via pip
+            subprocess.check_call(
+                [python_exe, "-m", "pip", "install", "--user"] + pip_packages, 
+                shell=is_windows
+            )
+
+            QMessageBox.information(
+                None, 
+                "Completato", 
+                "Moduli installati. Riavvia QGIS per poter utilizzare il plugin."
+            )
+        except Exception as e:
+            QMessageBox.critical(
+                None, 
+                "Errore", 
+                f"L'installazione automatica è fallita:\n{str(e)}\n\n"
+                "Prova ad avviare la Shell OSGeo4W come amministratore e digita:\n"
+                f"pip install {' '.join(pip_packages)}"
+            )
+
+        
 
     def unload(self):
         """Rimuove voci di menu e icone toolbar."""
@@ -140,8 +145,8 @@ class AlberiMonumentali:
 
     def run(self):
         """Apre il dialogo principale del plugin."""
-        if not _install_deps(self.iface.mainWindow()):
-            return
+        # if not _install_deps(self.iface.mainWindow()):
+            # return
         from .dialogs import AlberiDialog
         self.dlg = AlberiDialog(self.iface, self.iface.mainWindow())
         self.dlg.show()
