@@ -4,10 +4,9 @@
 import sys
 import os
 import subprocess
-from qgis.PyQt.QtWidgets import QAction, QMessageBox, QApplication, QPushButton, QMessageBox 
+from qgis.PyQt.QtWidgets import QAction, QMessageBox, QApplication, QPushButton
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtCore import QCoreApplication
-from qgis.utils import iface
 from qgis.core import Qgis
 
 
@@ -50,11 +49,6 @@ class AlberiMonumentali:
 
     def initGui(self):
         """Crea voci di menu e icone toolbar."""
-        
-        moduli_richiesti = ["pandas", "requests", "scipy"]
-        
-        self.check_dependencies()
-        
         self.toolbar = self.iface.addToolBar('AlberiMonumentali')
         self.toolbar.setObjectName('AlberiMonumentaliToolbar')
 
@@ -68,14 +62,12 @@ class AlberiMonumentali:
 
     def check_dependencies(self):
         """Verifica i moduli e gestisce i messaggi all'utente."""
-        missing_import_names = []
         missing_pip_names = []
 
         for imp_name, pip_name in self.required_modules.items():
             try:
                 __import__(imp_name)
             except ImportError:
-                missing_import_names.append(imp_name)
                 missing_pip_names.append(pip_name)
 
         if missing_pip_names:
@@ -106,17 +98,13 @@ class AlberiMonumentali:
     def run_installation(self, pip_packages):
         """Esegue l'installazione tecnica."""
         try:
-            # Individua l'eseguibile corretto per Windows/OSGeo4W
             python_exe = sys.executable.replace("qgis-bin.exe", "python-qgis.bat")
             if not os.path.exists(python_exe):
                 python_exe = sys.executable
-            
-            is_windows = os.name == 'nt'
 
-            # Installazione via pip
             subprocess.check_call(
-                [python_exe, "-m", "pip", "install", "--user"] + pip_packages, 
-                shell=is_windows
+                [python_exe, "-m", "pip", "install", "--user"] + pip_packages,
+                shell=False
             )
 
             QMessageBox.information(
@@ -133,8 +121,6 @@ class AlberiMonumentali:
                 f"pip install {' '.join(pip_packages)}"
             )
 
-        
-
     def unload(self):
         """Rimuove voci di menu e icone toolbar."""
         for action in self.actions:
@@ -145,8 +131,7 @@ class AlberiMonumentali:
 
     def run(self):
         """Apre il dialogo principale del plugin."""
-        # if not _install_deps(self.iface.mainWindow()):
-            # return
+        self.check_dependencies()
         from .dialogs import AlberiDialog
         self.dlg = AlberiDialog(self.iface, self.iface.mainWindow())
         self.dlg.show()

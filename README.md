@@ -126,6 +126,13 @@ pubblicato dal MASAF ai sensi della Legge n. 10/2013.
 
 ## Changelog
 
+### 1.2.7
+- Controllo dipendenze refactoring: sostituito il dialog modale con una **barra messaggio non bloccante** con pulsante "Installa ora" (`check_dependencies` / `ask_permission_to_install` / `run_installation`)
+- Fix: rimosso import duplicato `QMessageBox`, rimosso `from qgis.utils import iface` superfluo
+- Fix: eliminato dead code (`moduli_richiesti`, `missing_import_names` inutilizzati)
+- Fix Bandit B602: `shell=True` → `shell=False` in `subprocess.check_call`
+- `check_dependencies()` spostato da `initGui()` a `run()` (verificato solo all'apertura del plugin)
+
 ### 1.2.6
 - Fix compatibilità PyQt6: `QMessageBox.Yes`/`No` → `QMessageBox.StandardButton.Yes`/`No` ([`AttributeError`](https://github.com/pigreco/ami_masaf/issues) su QGIS 4.x / PyQt6 al primo avvio quando `pandas`/`xlrd` non sono installati)
 

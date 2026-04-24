@@ -37,6 +37,11 @@ experimental=True
 deprecated=False
 server=False
 changelog=
+    1.2.7 Refactoring controllo dipendenze: barra messaggio non bloccante con pulsante
+          "Installa ora" al posto del dialog modale (check_dependencies/ask_permission_to_install).
+          Fix import duplicato QMessageBox, rimosso iface superfluo da qgis.utils.
+          Fix Bandit B602: shell=True → shell=False in subprocess.check_call.
+          check_dependencies() spostato da initGui() a run().
     1.2.6 Fix compatibilità PyQt6: QMessageBox.Yes/No → QMessageBox.StandardButton.Yes/No
           (AttributeError su QGIS 4.x / PyQt6 al primo avvio con dipendenze mancanti).
     1.2.5 Merge branch fix/auto-install-deps su master; aggiornamento documentazione.
