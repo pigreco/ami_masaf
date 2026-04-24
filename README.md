@@ -126,6 +126,9 @@ pubblicato dal MASAF ai sensi della Legge n. 10/2013.
 
 ## Changelog
 
+### 1.2.6
+- Fix compatibilità PyQt6: `QMessageBox.Yes`/`No` → `QMessageBox.StandardButton.Yes`/`No` ([`AttributeError`](https://github.com/pigreco/ami_masaf/issues) su QGIS 4.x / PyQt6 al primo avvio quando `pandas`/`xlrd` non sono installati)
+
 ### 1.2.5
 - Merge branch `fix/auto-install-deps` su master
 - Aggiornamento documentazione: README e metadata allineati a tutte le modifiche della 1.2.4

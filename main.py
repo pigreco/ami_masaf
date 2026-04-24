@@ -20,6 +20,11 @@ def _install_deps(parent=None):
     if not missing:
         return True
 
+    # PyQt6 moved enum values to QMessageBox.StandardButton.*
+    _btn = getattr(QMessageBox, "StandardButton", QMessageBox)
+    YES = _btn.Yes
+    NO = _btn.No
+
     risposta = QMessageBox.question(
         parent,
         "Alberi Monumentali — Dipendenze mancanti",
@@ -29,11 +34,11 @@ def _install_deps(parent=None):
             + "\nVuoi installarli automaticamente adesso?\n"
             "(Potrebbe essere necessario riavviare QGIS al termine.)"
         ),
-        QMessageBox.Yes | QMessageBox.No,
-        QMessageBox.Yes,
+        YES | NO,
+        YES,
     )
 
-    if risposta != QMessageBox.Yes:
+    if risposta != YES:
         QMessageBox.warning(
             parent,
             "Alberi Monumentali — Installazione annullata",

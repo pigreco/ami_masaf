@@ -3,7 +3,7 @@ name=Alberi Monumentali Italia
 qgisMinimumVersion=3.20
 qgisMaximumVersion=4.99
 description=Scarica e visualizza gli alberi monumentali d'Italia dal registro ufficiale MASAF
-version=1.2.5
+version=1.2.6
 author=Salvatore Fiandaca
 email=pigrecoinfinito@gmail.com
 about=Plugin to download Italy's monumental trees registry from the official MASAF website
@@ -37,6 +37,8 @@ experimental=True
 deprecated=False
 server=False
 changelog=
+    1.2.6 Fix compatibilità PyQt6: QMessageBox.Yes/No → QMessageBox.StandardButton.Yes/No
+          (AttributeError su QGIS 4.x / PyQt6 al primo avvio con dipendenze mancanti).
     1.2.5 Merge branch fix/auto-install-deps su master; aggiornamento documentazione.
     1.2.4 Auto-installazione di pandas e xlrd al primo avvio se mancanti (issue #1).
           Import pandas/xlrd spostato in read_xls() (lazy import).
